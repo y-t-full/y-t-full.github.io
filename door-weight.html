@@ -116,8 +116,8 @@
 					<option value="33">10mm</option>
 				</select></label>
 			</li>
-			<li id="dw_list"><label>ドアの幅/DW  <br><input type="number" id="dw_data">(m)</label></li>
-			<li id="dh_list"><label>ドアの高さ/DH <br><input type="number" id="dh_data">(m)</label></li>
+			<li id="dw_list"><label>ドアの幅/DW  <br><input type="number" id="dw_data">(mm)</label></li>
+			<li id="dh_list"><label>ドアの高さ/DH <br><input type="number" id="dh_data">(mm)</label></li>
 		</ul>
 	</section>
 	<section id="calc_space">
@@ -232,7 +232,7 @@ setInterval(function(){
 		dh=$dh_data.value;
 		dkg = dw*dh*key;
 		dkg = dkg.toFixed(1);
-		$calc_div.textContent = `DW ${dw}(m) × DH ${dh}(m) × ${key}(扉データにより算出) = ${dkg}(kg)`;
+		$calc_div.textContent = `DW${dw}(mm) × DH${dh}(mm) × ${key}(扉データにより算出)=${dkg}(kg)`;
 		$span.textContent = dkg;
 		
 },300);	
