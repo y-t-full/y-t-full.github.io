@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>簡易扉重量計算式</title>
+<style>
+	body{
+		background : #e0ffee;
+		
+	}
+	.hidden{
+		display : none;
+	}
+	h1{
+		font-family : sans-serif;
+		margin:10px 10px;
+		font-size:30px;
+	}
+	#menu{
+		font-size:100%;
+		margin-left:-30px;
+	}
+	select,input{
+		font-size:90%;
+	}
+	ul{
+		background:white;
+		list-style:none;
+		font-family:monospace;
+		font-weight:bold;
+	}
+	li{
+		margin-bottom:5px;
+	}
+	#calc_space>div{
+		padding-left:10px;
+		font-size : 10px;
+		background:white;
+		margin-left:-8px;
+	}
+	#calc_space>p{
+		padding-left:10px;
+		background:white;
+		margin-left:-8px;
+	}
+	#calc_space span{
+		font-weight:bold;
+		font-size : 20px;
+		color:red;
+	}
+	input{
+		width : 150px;
+	}
+	
+	
+</style>
+</head>
+<body>
+	<h1>簡易扉重量計算ツール</h1>
+	<section id="menu">
+		<ul>
+			<li id="door_type"><label>扉の種類<br>
+				<select id="door_type_select">
+					<option value="slim32">スリムタイトドア32                            </option>
+					<option value="slim40">スリムタイトドア40                            </option>
+					<option value="flush">ステンレス・スチールフラッシュドア</option>
+					<option value="al_frame" selected>アルミ框ドア                       </option>
+					<option value="st_frame">ステンレス・スチール框ドア              </option>			
+					<option value="temper">テンパドア                                           </option>
+					<option value="partition">パーティションドア                             </option>
+				</select></label>
+			</li>
+			<li id="slim32_list" class="hidden"><label>フレームの素材/ガラスの厚さ<br>
+				<select id="slim32_frame_select">
+					<option value="al">アルミ</option>
+					<option value="st">ステンレス</option>
+				</select>
+				<select id="slim32_t_select">
+					<option value="6">6mm</option>
+					<option value="8">8mm</option>
+					<option value="10">10mm</option>
+					<option value="12">12mm</option>
+				</select></label>
+			</li>
+			<li id="slim40_list" class="hidden"><label>フレームの素材/ガラスの厚さ<br>
+				<select id="slim40_frame_select">
+					<option value="al">アルミ</option>
+					<option value="st">ステンレス</option>
+				</select>
+				<select id="slim40_t_select">
+					<option value="6">6mm</option>
+					<option value="8">8mm</option>
+					<option value="10">10mm</option>
+					<option value="12">12mm</option>
+				</select></label>
+			</li>
+			<li id="flush_list" class="hidden"><label>扉の厚さ<br>
+				<select id="flush_t_select">
+					<option value="38">40mm</option>
+					<option value="39">50mm</option>
+					<option value="40">60mm</option> 
+				</select></label>
+			</li>
+			<li id="al_frame_list" class="hidden"><label>硝子の厚さ<br>
+				<select id="al_frame_select">
+					<option value="21">6mm</option>
+					<option value="25">8mm</option>
+					<option value="29">10mm</option>
+				</select></label>
+			</li>
+			<li id="st_frame_list" class="hidden"><label>硝子の厚さ<br>
+				<select id="st_frame_select">
+					<option value="22">6mm</option>
+					<option value="28">8mm</option>
+					<option value="33">10mm</option>
+				</select></label>
+			</li>
+			<li id="dw_list"><label>ドアの幅/DW  <br><input type="number" id="dw_data">(m)</label></li>
+			<li id="dh_list"><label>ドアの高さ/DH <br><input type="number" id="dh_data">(m)</label></li>
+		</ul>
+	</section>
+	<section id="calc_space">
+		<p>扉重量は約<span></span>kgです</p>
+		<div></div>
+	</section>
+<script>
+	const $door_type_select = document.querySelector("#door_type_select");
+	const $slim40_t_select = document.querySelector("#slim40_t_select");
+	const $slim40_frame_select = document.querySelector("#slim40_frame_select");
+	const $slim32_t_select= document.querySelector("#slim32_t_select");
+	const $slim32_frame_select = document.querySelector("#slim32_frame_select");
+	const $flush_t_select = document.querySelector("#flush_t_select");
+	const $al_frame_select = document.querySelector("#al_frame_select");
+	const $st_frame_select = document.querySelector("#st_frame_select");
+	const $dh_data = document.querySelector("#dh_data");	
+	const $dw_data = document.querySelector("#dw_data");
+	const $calc_div = document.querySelectorAll("#calc_space > div")[0];
+	const $span = document.querySelector("span");
+	const $li = document.querySelectorAll("li");
+	
+	let dw = 0;
+	let dh = 0;
+	let key = 0;
+	let dkg = 0;
+	
+	const fun = (a) =>　{
+		$li.forEach((not,index)=>{
+			if(index!==a&&index!==0&&index!==6&&index!==7){
+				$li[index].classList.add("hidden");
+			}else if(index===a){
+				$li[index].classList.remove("hidden");
+			}
+		});
+	};
+	
+//1秒毎に繰り返す
+setInterval(function(){
+
+		if($door_type_select.value==="partition"){
+			fun();
+			key = 14;
+		}else if($door_type_select.value==="temper"){
+			fun();
+			key = 36;
+		}else if($door_type_select.value==="st_frame"){
+			fun(5);
+			key = $st_frame_select.value;
+		}else if($door_type_select.value==="al_frame"){
+			fun(4);
+			key = $al_frame_select.value;
+		}else if($door_type_select.value==="flush"){
+			fun(3);
+			key = $flush_t_select.value;
+		}else if($door_type_select.value==="slim32"){
+			fun(1);
+			if($slim32_frame_select.value==="al"){
+				switch($slim32_t_select.value){
+					case "6": key = 20;
+					break;
+					case "8": key = 24;
+					break;
+					case "10": key = 29;
+					break;
+					case "12": key = 33;
+					break;
+				}
+				
+			}else if($slim32_frame_select.value==="st"){
+				switch($slim32_t_select.value){
+					case "6": key = 22;
+					break;
+					case "8": key = 27;
+					break;
+					case "10": key = 32;
+					break;
+					case "12": key = 36;
+					break;
+				}
+			}
+		}else if($door_type_select.value==="slim40"){
+			fun(2);
+			if($slim40_frame_select.value==="al"){
+				switch($slim40_t_select.value){
+					case "6": key = 21;
+					break;
+					case "8": key = 25;
+					break;
+					case "10": key = 29;
+					break;
+					case "12": key = 34;
+					break;
+				}
+			}else if($slim40_frame_select.value==="st"){
+				switch($slim40_t_select.value){
+					case "6": key = 25;
+					break;
+					case "8": key = 29;
+					break;
+					case "10": key = 34;
+					break;
+					case "12": key = 38;
+					break;
+				}
+			}
+		}
+		
+		
+		//重量計算式
+		key = key/1000000
+		dw=$dw_data.value;
+		dh=$dh_data.value;
+		dkg = dw*dh*key;
+		dkg = dkg.toFixed(1);
+		$calc_div.textContent = `DW ${dw}(m) × DH ${dh}(m) × ${key}(扉データにより算出) = ${dkg}(kg)`;
+		$span.textContent = dkg;
+		
+},300);	
+
+</script>
+</body>
+</html>
