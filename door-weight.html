@@ -36,11 +36,12 @@
 	}
 	input	{width : 150px;}
 	
-	
-	#door_stroke{background:white;}
-	#counter {font-weight:bold; font-size:50px;margin:10px 0;background:white;text-align:center;}
-	#stroke_speed { font-size : 40px; color : red;}
-	#stroke_speed_m,#stroke_speed_p { font-size : 10px;}
+	#timer_tool{margin-left:-7px;}
+	#door_stroke{background:white;padding-left:70px;font-family:monospace;font-weight:bold;}
+	#counter {font-weight:bold; font-size:50px;margin:10px 0;background:white;padding-left:100px;font-family:sans-serif}
+	#timer_btn{display:block;height:80px;width:180px;margin:20px auto 20px 93px;}
+	#stroke_speed { font-size : 40px; color : red;background:white; padding-left:85px;padding-bottom:3px;}
+	#stroke_speed_m,#stroke_speed_p { font-size : 10px;background:white;padding-left:135px;}
 	
 	
 </style>
@@ -117,7 +118,7 @@
 </section>
 
 <section id="timer_tool">
-	<h1>簡易扉速度測定ツール</h1>
+	<h1 style="padding-left:5px;">簡易扉速度測定ツール</h1>
 	<div id="door_stroke">
 		<label>測定ストローク幅
 		<select id="door_stroke_data">
@@ -126,13 +127,14 @@
 			<option value="400">400mm</option>
 		</select></label>
 	</div>
+
 	<section id="counter_space">
-		<div id="counter">00.000</div>
+		<div id="counter">0.000</div>
+		<input type="button" value="START" id="timer_btn">
 		<div id="stroke_speed_m"></div>
-		<div id="stroke_speed">0mm/秒</div>
+		<div id="stroke_speed">000mm/秒</div>
 		<div id="stroke_speed_p"></div>
 	</section>
-	<input type="button" value="START" id="timer_btn">
 	
 </section>
 
@@ -280,13 +282,13 @@ setInterval(function(){
 				$countUp();
 			}else if(active==="true"){
 				active="false";
-				$timer_btn.value="START";
 				clearTimeout(timeOutId);
+				$timer_btn.value="START";
 				let time = ( (t_s+ t_ms)/1000 );
 				time =Number( time.toFixed(1));
 				$stroke_speed.textContent = `${( $door_stroke_data.value  /  time  ).toFixed(0) }mm/秒`;
-				$stroke_speed_m.textContent = `${( $door_stroke_data.value  / (time+0.1)  ).toFixed(0) }mm/秒(0.1秒遅い場合)`;
-				$stroke_speed_p.textContent = `${( $door_stroke_data.value  /  (time-0.1)  ).toFixed(0) }mm/秒(0.1秒早い場合)`;
+				$stroke_speed_m.textContent = `${( $door_stroke_data.value  / (time+0.1)  ).toFixed(0) }mm/秒(+0.1)`;
+				$stroke_speed_p.textContent = `${( $door_stroke_data.value  /  (time-0.1)  ).toFixed(0) }mm/秒(-0.1)`;
 			}
 		});
 
