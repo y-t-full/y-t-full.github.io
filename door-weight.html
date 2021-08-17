@@ -5,34 +5,19 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>簡易扉重量計算式</title>
 <style>
-	body{
-		background : #e0ffee;
-		
-	}
-	.hidden{
-		display : none;
-	}
-	h1{
-		font-family : sans-serif;
-		margin:10px 10px;
-		font-size:30px;
-	}
-	#menu{
-		font-size:100%;
-		margin-left:-30px;
-	}
-	select,input{
-		font-size:90%;
-	}
+	body	{	background : #e0ffee;}
+	//#door-weight-tool		{display:none;}
+	.hidden	{display : none;}
+	h1		{font-family : sans-serif;	margin:10px 10px;	font-size:30px;}
+	#menu		{font-size:100%;	margin-left:-30px;}
+	select,input		{font-size:90%;	}
 	ul{
 		background:white;
 		list-style:none;
 		font-family:monospace;
 		font-weight:bold;
 	}
-	li{
-		margin-bottom:5px;
-	}
+	li	{	margin-bottom:5px;}
 	#calc_space>div{
 		padding-left:10px;
 		font-size : 10px;
@@ -49,14 +34,19 @@
 		font-size : 20px;
 		color:red;
 	}
-	input{
-		width : 150px;
-	}
+	input	{width : 150px;}
+	
+	
+	#door_stroke{background:white;}
+	#counter {font-weight:bold; font-size:50px;margin:10px 0;background:white;text-align:center;}
+	#stroke_speed { font-size : 40px; color : red;}
+	#stroke_speed_m,#stroke_speed_p { font-size : 10px;}
 	
 	
 </style>
 </head>
 <body>
+<section id="door-weight-tool">
 	<h1>簡易扉重量計算ツール</h1>
 	<section id="menu">
 		<ul>
@@ -124,6 +114,28 @@
 		<p>扉重量は約<span></span>kgです</p>
 		<div></div>
 	</section>
+</section>
+
+<section id="timer_tool">
+	<h1>簡易扉速度測定ツール</h1>
+	<div id="door_stroke">
+		<label>測定ストローク幅
+		<select id="door_stroke_data">
+			<option value="600">600mm</option>
+			<option value="500">500mm</option>
+			<option value="400">400mm</option>
+		</select></label>
+	</div>
+	<section id="counter_space">
+		<div id="counter">00.000</div>
+		<div id="stroke_speed_m"></div>
+		<div id="stroke_speed">0mm/秒</div>
+		<div id="stroke_speed_p"></div>
+	</section>
+	<input type="button" value="START" id="timer_btn">
+	
+</section>
+
 <script>
 	const $door_type_select = document.querySelector("#door_type_select");
 	const $slim40_t_select = document.querySelector("#slim40_t_select");
@@ -138,7 +150,6 @@
 	const $calc_div = document.querySelectorAll("#calc_space > div")[0];
 	const $span = document.querySelector("span");
 	const $li = document.querySelectorAll("li");
-	
 	let dw = 0;
 	let dh = 0;
 	let key = 0;
@@ -236,6 +247,48 @@ setInterval(function(){
 		$span.textContent = dkg;
 		
 },300);	
+
+
+//タイマー
+		const $timer_btn = document.querySelector("#timer_btn");
+		const $counter = document.querySelector("#counter");
+		const $door_stroke_data = document.querySelector("#door_stroke_data");
+		const $stroke_speed = document.querySelector("#stroke_speed");
+		const $stroke_speed_m = document.querySelector("#stroke_speed_m");
+		const $stroke_speed_p = document.querySelector("#stroke_speed_p");
+		let now_t;
+		let t;
+		let t_ms;
+		let t_s;
+		let timeOutId;
+		let active = "false";
+		
+		const $countUp = () => {
+				t = new Date(Date.now()- now_t);
+				t_ms = String(t.getMilliseconds()).padStart(3,"0");
+				t_s = t.getSeconds() ;
+				$counter.textContent = `${t_s}.${t_ms}`;
+			timeOutId = setTimeout( ()=>{
+			$countUp(); },10);
+		};
+		
+		$timer_btn.addEventListener("click",()=>{
+			if(active==="false"){
+				active="true";
+				$timer_btn.value="STOP";
+				now_t = Date.now();
+				$countUp();
+			}else if(active==="true"){
+				active="false";
+				$timer_btn.value="START";
+				clearTimeout(timeOutId);
+				let time = ( (t_s+ t_ms)/1000 );
+				time =Number( time.toFixed(1));
+				$stroke_speed.textContent = `${( $door_stroke_data.value  /  time  ).toFixed(0) }mm/秒`;
+				$stroke_speed_m.textContent = `${( $door_stroke_data.value  / (time+0.1)  ).toFixed(0) }mm/秒(0.1秒遅い場合)`;
+				$stroke_speed_p.textContent = `${( $door_stroke_data.value  /  (time-0.1)  ).toFixed(0) }mm/秒(0.1秒早い場合)`;
+			}
+		});
 
 </script>
 </body>
