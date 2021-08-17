@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>簡易扉重量計算式</title>
+<style>
+	html{touch-action :manipulation;}
+	body	{	background : #e0ffee;}
+	hr{margin:10px 0;}
+	//#door-weight-tool		{display:none;}
+	.hidden	{display : none;}
+	h1		{font-family : sans-serif;	margin:10px 10px;	font-size:30px;}
+	#menu		{font-size:100%;	margin-left:-30px;}
+	select,input		{font-size:90%;	}
+	ul{
+		background:white;
+		list-style:none;
+		font-family:monospace;
+		font-weight:bold;
+	}
+	li	{	margin-bottom:5px;}
+	#calc_space>div{
+		padding-left:10px;
+		font-size : 10px;
+		background:white;
+		margin-left:-8px;
+	}
+	#calc_space>p{
+		padding-left:10px;
+		background:white;
+		margin-left:-8px;
+	}
+	#calc_space span{
+		font-weight:bold;
+		font-size : 20px;
+		color:red;
+	}
+	input	{width : 150px;}
+	
+	#timer_tool{margin-left:-7px;}
+	#door_stroke{background:white;padding-left:70px;font-family:monospace;font-weight:bold;}
+	#counter {font-weight:bold; font-size:50px;margin:10px 0;background:white;padding-left:100px;font-family:sans-serif}
+	#timer_btn{display:block;height:80px;width:180px;margin:20px auto 20px 93px;}
+	#stroke_speed { font-size : 40px; color : red;background:white; padding-left:85px;padding-bottom:3px;}
+	#stroke_speed_m,#stroke_speed_p { font-size : 10px;background:white;padding-left:135px;}
+	
+	
+</style>
+</head>
+<body>
+<section id="door-weight-tool">
+	<h1>簡易扉重量計算ツール</h1>
+	<section id="menu">
+		<ul>
+			<li id="door_type"><label>扉の種類<br>
+				<select id="door_type_select">
+					<option value="slim32">スリムタイトドア32                            </option>
+					<option value="slim40">スリムタイトドア40                            </option>
+					<option value="flush">ステンレス・スチールフラッシュドア</option>
+					<option value="al_frame" selected>アルミ框ドア                       </option>
+					<option value="st_frame">ステンレス・スチール框ドア              </option>			
+					<option value="temper">テンパドア                                           </option>
+					<option value="partition">パーティションドア                             </option>
+				</select></label>
+			</li>
+			<li id="slim32_list" class="hidden"><label>フレームの素材/ガラスの厚さ<br>
+				<select id="slim32_frame_select">
+					<option value="al">アルミ</option>
+					<option value="st">ステンレス</option>
+				</select>
+				<select id="slim32_t_select">
+					<option value="6">6mm</option>
+					<option value="8">8mm</option>
+					<option value="10">10mm</option>
+					<option value="12">12mm</option>
+				</select></label>
+			</li>
+			<li id="slim40_list" class="hidden"><label>フレームの素材/ガラスの厚さ<br>
+				<select id="slim40_frame_select">
+					<option value="al">アルミ</option>
+					<option value="st">ステンレス</option>
+				</select>
+				<select id="slim40_t_select">
+					<option value="6">6mm</option>
+					<option value="8">8mm</option>
+					<option value="10">10mm</option>
+					<option value="12">12mm</option>
+				</select></label>
+			</li>
+			<li id="flush_list" class="hidden"><label>扉の厚さ<br>
+				<select id="flush_t_select">
+					<option value="38">40mm</option>
+					<option value="39">50mm</option>
+					<option value="40">60mm</option> 
+				</select></label>
+			</li>
+			<li id="al_frame_list" class="hidden"><label>硝子の厚さ<br>
+				<select id="al_frame_select">
+					<option value="21">6mm</option>
+					<option value="25">8mm</option>
+					<option value="29">10mm</option>
+				</select></label>
+			</li>
+			<li id="st_frame_list" class="hidden"><label>硝子の厚さ<br>
+				<select id="st_frame_select">
+					<option value="22">6mm</option>
+					<option value="28">8mm</option>
+					<option value="33">10mm</option>
+				</select></label>
+			</li>
+			<li id="dw_list"><label>ドアの幅/DW  <br><input type="number" id="dw_data">(mm)</label></li>
+			<li id="dh_list"><label>ドアの高さ/DH <br><input type="number" id="dh_data">(mm)</label></li>
+		</ul>
+	</section>
+	<section id="calc_space">
+		<p>扉重量は約<span></span>kgです</p>
+		<div></div>
+	</section>
+</section>
+
+<hr>
+
+<section id="timer_tool">
+	<h1 style="padding-left:5px;">簡易扉速度測定ツール</h1>
+	<div id="door_stroke">
+		<label>測定ストローク幅
+		<select id="door_stroke_data">
+			<option value="600">600mm</option>
+			<option value="500">500mm</option>
+			<option value="400">400mm</option>
+		</select></label>
+	</div>
+
+	<section id="counter_space">
+		<div id="counter">0.000</div>
+		<input type="button" value="START" id="timer_btn">
+		<div id="stroke_speed_m"></div>
+		<div id="stroke_speed">000mm/秒</div>
+		<div id="stroke_speed_p"></div>
+	</section>
+	
+</section>
+
+<script>
+	const $door_type_select = document.querySelector("#door_type_select");
+	const $slim40_t_select = document.querySelector("#slim40_t_select");
+	const $slim40_frame_select = document.querySelector("#slim40_frame_select");
+	const $slim32_t_select= document.querySelector("#slim32_t_select");
+	const $slim32_frame_select = document.querySelector("#slim32_frame_select");
+	const $flush_t_select = document.querySelector("#flush_t_select");
+	const $al_frame_select = document.querySelector("#al_frame_select");
+	const $st_frame_select = document.querySelector("#st_frame_select");
+	const $dh_data = document.querySelector("#dh_data");	
+	const $dw_data = document.querySelector("#dw_data");
+	const $calc_div = document.querySelectorAll("#calc_space > div")[0];
+	const $span = document.querySelector("span");
+	const $li = document.querySelectorAll("li");
+	let dw = 0;
+	let dh = 0;
+	let key = 0;
+	let dkg = 0;
+	
+	const fun = (a) =>　{
+		$li.forEach((not,index)=>{
+			if(index!==a&&index!==0&&index!==6&&index!==7){
+				$li[index].classList.add("hidden");
+			}else if(index===a){
+				$li[index].classList.remove("hidden");
+			}
+		});
+	};
+	
+//1秒毎に繰り返す
+setInterval(function(){
+
+		if($door_type_select.value==="partition"){
+			fun();
+			key = 14;
+		}else if($door_type_select.value==="temper"){
+			fun();
+			key = 36;
+		}else if($door_type_select.value==="st_frame"){
+			fun(5);
+			key = $st_frame_select.value;
+		}else if($door_type_select.value==="al_frame"){
+			fun(4);
+			key = $al_frame_select.value;
+		}else if($door_type_select.value==="flush"){
+			fun(3);
+			key = $flush_t_select.value;
+		}else if($door_type_select.value==="slim32"){
+			fun(1);
+			if($slim32_frame_select.value==="al"){
+				switch($slim32_t_select.value){
+					case "6": key = 20;
+					break;
+					case "8": key = 24;
+					break;
+					case "10": key = 29;
+					break;
+					case "12": key = 33;
+					break;
+				}
+				
+			}else if($slim32_frame_select.value==="st"){
+				switch($slim32_t_select.value){
+					case "6": key = 22;
+					break;
+					case "8": key = 27;
+					break;
+					case "10": key = 32;
+					break;
+					case "12": key = 36;
+					break;
+				}
+			}
+		}else if($door_type_select.value==="slim40"){
+			fun(2);
+			if($slim40_frame_select.value==="al"){
+				switch($slim40_t_select.value){
+					case "6": key = 21;
+					break;
+					case "8": key = 25;
+					break;
+					case "10": key = 29;
+					break;
+					case "12": key = 34;
+					break;
+				}
+			}else if($slim40_frame_select.value==="st"){
+				switch($slim40_t_select.value){
+					case "6": key = 25;
+					break;
+					case "8": key = 29;
+					break;
+					case "10": key = 34;
+					break;
+					case "12": key = 38;
+					break;
+				}
+			}
+		}
+		
+		
+		//重量計算式
+		key = key/1000000
+		dw=$dw_data.value;
+		dh=$dh_data.value;
+		dkg = dw*dh*key;
+		dkg = dkg.toFixed(1);
+		$calc_div.textContent = `DW${dw}(mm) × DH${dh}(mm) × ${key}(扉データにより算出)=${dkg}(kg)`;
+		$span.textContent = dkg;
+		
+},300);	
+
+
+//タイマー
+		const $timer_btn = document.querySelector("#timer_btn");
+		const $counter = document.querySelector("#counter");
+		const $door_stroke_data = document.querySelector("#door_stroke_data");
+		const $stroke_speed = document.querySelector("#stroke_speed");
+		const $stroke_speed_m = document.querySelector("#stroke_speed_m");
+		const $stroke_speed_p = document.querySelector("#stroke_speed_p");
+		let now_t;
+		let t;
+		let t_ms;
+		let t_s;
+		let timeOutId;
+		let active = "false";
+		
+		const $countUp = () => {
+				t = new Date(Date.now()- now_t);
+				t_ms = String(t.getMilliseconds()).padStart(3,"0");
+				t_s = t.getSeconds() ;
+				$counter.textContent = `${t_s}.${t_ms}`;
+			timeOutId = setTimeout( ()=>{
+			$countUp(); },10);
+		};
+		
+		$timer_btn.addEventListener("click",()=>{
+			if(active==="false"){
+				active="true";
+				$timer_btn.value="STOP";
+				now_t = Date.now();
+				$countUp();
+			}else if(active==="true"){
+				active="false";
+				clearTimeout(timeOutId);
+				$timer_btn.value="START";
+				let time = ( (t_s+ t_ms)/1000 );
+				time =Number( time.toFixed(1));
+				$stroke_speed.textContent = `${( $door_stroke_data.value  /  time  ).toFixed(0) }mm/秒`;
+				$stroke_speed_m.textContent = `${( $door_stroke_data.value  / (time+0.1)  ).toFixed(0) }mm/秒(+0.1)`;
+				$stroke_speed_p.textContent = `${( $door_stroke_data.value  /  (time-0.1)  ).toFixed(0) }mm/秒(-0.1)`;
+			}
+		});
+
+</script>
+</body>
+</html>
